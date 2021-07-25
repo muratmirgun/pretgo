@@ -21,25 +21,25 @@ var prettyCmd = &cobra.Command{
 	Short: "Pretty-print the serialised output",
 	Run: func(cmd *cobra.Command, args []string) {
 		indent := "  "
-		wrap, _ := strconv.Atoi(args[0])
+		wrp, _ := strconv.Atoi(args[0])
 		node, err := html.Parse(os.Stdin)
 		if err != nil {
 			fmt.Fprint(os.Stderr, "Failed parsing HTML: ", err)
 			os.Exit(1)
 		}
-		if err := Print(os.Stdout, node, indent, wrap); err != nil {
+		if err := Print(os.Stdout, node, indent, wrp); err != nil {
 			fmt.Fprint(os.Stderr, "Failed printing HTML: ", err)
 			os.Exit(1)
 		}
 	},
 }
 
-func Print(w io.Writer, root *html.Node, indent string, wrap int) error {
+func Print(w io.Writer, root *html.Node, indent string, wrp int) error {
 	p := printer{
-		w:         w,
-		indentStr: indent,
-		wrapWidth: wrap,
-		lineStart: true,
+		w:      w,
+		iStr:   indent,
+		wWidth: wrp,
+		lStart: true,
 	}
 	if err := p.doc(root); err != nil {
 		return err
@@ -47,10 +47,9 @@ func Print(w io.Writer, root *html.Node, indent string, wrap int) error {
 	return p.werr
 }
 
-// tagSet holds a set of HTML tag names.
 type tagSet map[string]struct{}
 
-func newTagSet(tags []string) tagSet {
+func nwtagSet(tags []string) tagSet {
 	ts := make(tagSet)
 	for _, t := range tags {
 		ts[t] = struct{}{}
@@ -66,34 +65,34 @@ func (ts tagSet) has(n *html.Node) bool {
 	return ok
 }
 
-var voidTags = newTagSet(strings.Fields("area base br col embed hr img input link meta param source track wbr"))
+var tagvoid = nwtagSet(strings.Fields("area base br col embed hr img input link meta param source track wbr"))
 
-var inlineTags = newTagSet(strings.Fields("a amp-img b code em i img picture span s source strong"))
+var inlnTags = nwtagSet(strings.Fields("a amp-img b code em i img picture span s source strong"))
 
-var omitCloseTags = newTagSet(strings.Fields("li"))
+var clstags = nwtagSet(strings.Fields("li"))
 
-var literalTags = newTagSet(strings.Fields("noscript script style"))
+var ltrltags = nwtagSet(strings.Fields("noscript script style"))
 
-var keepSpaceTags = newTagSet(strings.Fields("pre"))
+var spacekeepTags = nwtagSet(strings.Fields("pre"))
 
 type printer struct {
-	w         io.Writer
-	werr      error
-	indentStr string
-	wrapWidth int
+	w      io.Writer
+	werr   error
+	iStr   string
+	wWidth int
 
-	level          int
-	literalDepth   int
-	keepSpaceDepth int
-	lineStart      bool
-	lineWidth      int
+	lvl       int
+	ltrlkeep  int
+	spckeeper int
+	lStart    bool
+	lWidth    int
 }
 
 func (p *printer) inLiteral() bool {
-	return p.literalDepth > 0
+	return p.ltrlkeep > 0
 }
-func (p *printer) inKeepSpace() bool {
-	return p.keepSpaceDepth > 0
+func (p *printer) inspcKeep() bool {
+	return p.spckeeper > 0
 }
 
 func (p *printer) doc(n *html.Node) error {
@@ -104,7 +103,7 @@ func (p *printer) doc(n *html.Node) error {
 		switch c.Type {
 		case html.DoctypeNode:
 			p.write("<!DOCTYPE " + c.Data + ">")
-			p.endl()
+			p.endline()
 		case html.ElementNode:
 			if err := p.element(c); err != nil {
 				return err
@@ -122,35 +121,35 @@ func (p *printer) element(n *html.Node) error {
 		return fmt.Errorf("got non-element node %q of type %v", tag, n.Type)
 	}
 
-	inline := inlineTags.has(n)
-	if forceInline := p.openTag(n); forceInline {
-		inline = true
+	inln := inlnTags.has(n)
+	if forceinln := p.tagOpener(n); forceinln {
+		inln = true
 	}
 
-	literal := literalTags.has(n)
+	literal := ltrltags.has(n)
 	if literal {
-		p.literalDepth++
+		p.ltrlkeep++
 	}
-	keepSpace := keepSpaceTags.has(n)
-	if keepSpace {
-		p.keepSpaceDepth++
-	}
-
-	omitClose := omitCloseTags.has(n)
-	if !inline && !omitClose {
-		p.endl()
+	spcKeep := spacekeepTags.has(n)
+	if spcKeep {
+		p.spckeeper++
 	}
 
-	if voidTags.has(n) {
-		if literal || keepSpace {
+	omitClose := clstags.has(n)
+	if !inln && !omitClose {
+		p.endline()
+	}
+
+	if tagvoid.has(n) {
+		if literal || spcKeep {
 			panic(fmt.Sprintf("<%s> is both literal/keep-space and void", n.Data))
 		}
 		return nil
 	}
 
 	// Indent if needed and print the children.
-	if !inline {
-		p.level++
+	if !inln {
+		p.lvl++
 	}
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
 		switch c.Type {
@@ -168,23 +167,23 @@ func (p *printer) element(n *html.Node) error {
 			return fmt.Errorf("unexpected node %q of type %d", c.Data, c.Type)
 		}
 	}
-	if !inline {
-		p.level--
-		p.endl()
+	if !inln {
+		p.lvl--
+		p.endline()
 	}
 
 	if !omitClose {
-		p.maybeIndent()
+		p.Indnt()
 		p.write(closeTag(n))
 	}
 	if literal {
-		p.literalDepth--
+		p.ltrlkeep--
 	}
-	if keepSpace {
-		p.keepSpaceDepth--
+	if spcKeep {
+		p.spckeeper--
 	}
-	if !inline {
-		p.endl()
+	if !inln {
+		p.endline()
 	}
 	return nil
 }
@@ -203,9 +202,9 @@ func (p *printer) text(n *html.Node) error {
 	}
 
 	s := n.Data
-	s = escapeText(s)
+	s = escapeTXT(s)
 
-	if p.inKeepSpace() {
+	if p.inspcKeep() {
 		p.write(s)
 		return nil
 	}
@@ -215,14 +214,14 @@ func (p *printer) text(n *html.Node) error {
 		return nil
 	}
 
-	p.maybeIndent()
+	p.Indnt()
 
 	startSpace := s[0] == ' '
 	endSpace := s[len(s)-1] == ' '
 
-	wrapStart := 0
-	if (inlineTags.has(n.PrevSibling) || inlineTags.has(n.Parent)) && !startSpace {
-		wrapStart = 1
+	wrpStart := 0
+	if (inlnTags.has(n.PrevSibling) || inlnTags.has(n.Parent)) && !startSpace {
+		wrpStart = 1
 	}
 
 	words := strings.Fields(strings.TrimSpace(s))
@@ -234,43 +233,43 @@ func (p *printer) text(n *html.Node) error {
 			w = w + " "
 		}
 
-		if i < wrapStart {
+		if i < wrpStart {
 			p.write(w)
 		} else {
-			p.wrap(w, "")
+			p.wrp(w, "")
 		}
 	}
 	return nil
 }
 
-func (p *printer) maybeIndent() {
-	if p.inLiteral() || p.inKeepSpace() || !p.lineStart {
+func (p *printer) Indnt() {
+	if p.inLiteral() || p.inspcKeep() || !p.lStart {
 		return
 	}
-	s := strings.Repeat(p.indentStr, p.level)
+	s := strings.Repeat(p.iStr, p.lvl)
 	p.write(s) // updates lineStart and lineWidth
 }
 
-func (p *printer) wrap(s, extra string) {
-	if !p.inLiteral() && !p.inKeepSpace() &&
-		p.wrapWidth > 0 && p.lineWidth+len(s) > p.wrapWidth {
-		p.endl()
-		p.maybeIndent()
+func (p *printer) wrp(s, extra string) {
+	if !p.inLiteral() && !p.inspcKeep() &&
+		p.wWidth > 0 && p.lWidth+len(s) > p.wWidth {
+		p.endline()
+		p.Indnt()
 		s = extra + strings.TrimLeft(s, " ")
 	}
 	p.write(s)
 }
 
-func (p *printer) endl() {
-	if p.inLiteral() || p.inKeepSpace() {
+func (p *printer) endline() {
+	if p.inLiteral() || p.inspcKeep() {
 		return
 	}
-	if p.lineStart {
+	if p.lStart {
 		return
 	}
 	p.write("\n")
-	p.lineStart = true
-	p.lineWidth = 0
+	p.lStart = true
+	p.lWidth = 0
 }
 
 func (p *printer) write(s string) {
@@ -278,11 +277,11 @@ func (p *printer) write(s string) {
 		return
 	}
 	_, p.werr = io.WriteString(p.w, s)
-	p.lineStart = false
-	p.lineWidth += len(s)
+	p.lStart = false
+	p.lWidth += len(s)
 }
 
-func (p *printer) openTag(n *html.Node) (forceInline bool) {
+func (p *printer) tagOpener(n *html.Node) (forceinln bool) {
 	tokens := append([]string{}, "<"+n.Data)
 	for _, a := range n.Attr {
 		as := " " + a.Key
@@ -295,52 +294,52 @@ func (p *printer) openTag(n *html.Node) (forceInline bool) {
 	tokens[len(tokens)-1] += ">"
 	tagLen := len(strings.Join(tokens, ""))
 
-	inline := inlineTags.has(n)
-	wouldWrap := p.wrapWidth > 0 && p.lineWidth+tagLen > p.wrapWidth
+	inln := inlnTags.has(n)
+	wouldwrp := p.wWidth > 0 && p.lWidth+tagLen > p.wWidth
 	prev := n.PrevSibling
 	prevTextNotSpace := prev != nil && prev.Type == html.TextNode &&
-		(prev.Data == "" || !whitespace.MatchString(prev.Data[len(prev.Data)-1:]))
-	startSpaceMatters := inlineTags.has(prev) || inlineTags.has(n.Parent) || prevTextNotSpace
-	if !inline || (wouldWrap && !startSpaceMatters) {
-		p.endl()
+		(prev.Data == "" || !whtspace.MatchString(prev.Data[len(prev.Data)-1:]))
+	startSpaceMatters := inlnTags.has(prev) || inlnTags.has(n.Parent) || prevTextNotSpace
+	if !inln || (wouldwrp && !startSpaceMatters) {
+		p.endline()
 	}
 
-	startedLine := p.lineStart
-	p.maybeIndent()
+	startedLine := p.lStart
+	p.Indnt()
 
-	if !literalTags.has(n) && !p.inLiteral() &&
-		!keepSpaceTags.has(n) && !p.inKeepSpace() {
+	if !ltrltags.has(n) && !p.inLiteral() &&
+		!spacekeepTags.has(n) && !p.inspcKeep() {
 		childLen := -1
 		if n.FirstChild == nil {
 			childLen = 0
 		} else if hasSingleChild(n) && n.FirstChild.Type == html.TextNode {
-			childLen = len(collapseText(escapeText(n.FirstChild.Data), n.FirstChild))
+			childLen = len(collapseText(escapeTXT(n.FirstChild.Data), n.FirstChild))
 		}
-		if childLen >= 0 && (p.lineWidth+tagLen+childLen+len(closeTag(n)) < p.wrapWidth || p.wrapWidth <= 0) {
-			forceInline = true
+		if childLen >= 0 && (p.lWidth+tagLen+childLen+len(closeTag(n)) < p.wWidth || p.wWidth <= 0) {
+			forceinln = true
 		}
 	}
 
-	var unwrapTokens int
-	var wrapIndent string
+	var unwrpTokens int
+	var wrpIndent string
 	if startedLine {
-		wrapIndent = strings.Repeat(p.indentStr, 2)
-		unwrapTokens = 1
-		if len(tokens[0]) < len(wrapIndent) {
-			unwrapTokens = 2
+		wrpIndent = strings.Repeat(p.iStr, 2)
+		unwrpTokens = 1
+		if len(tokens[0]) < len(wrpIndent) {
+			unwrpTokens = 2
 		}
-	} else if (inline || forceInline) && startSpaceMatters {
-		unwrapTokens = 1
+	} else if (inln || forceinln) && startSpaceMatters {
+		unwrpTokens = 1
 	}
 	for i, t := range tokens {
-		if i < unwrapTokens {
+		if i < unwrpTokens {
 			p.write(t)
 		} else {
-			p.wrap(t, wrapIndent)
+			p.wrp(t, wrpIndent)
 		}
 	}
 
-	return forceInline
+	return forceinln
 }
 
 func hasSingleChild(n *html.Node) bool {
@@ -348,29 +347,29 @@ func hasSingleChild(n *html.Node) bool {
 }
 
 func closeTag(n *html.Node) string {
-	if n.Type != html.ElementNode || voidTags.has(n) || omitCloseTags.has(n) {
+	if n.Type != html.ElementNode || tagvoid.has(n) || clstags.has(n) {
 		return ""
 	}
 	return "</" + n.Data + ">"
 }
 
-func escapeText(s string) string {
+func escapeTXT(s string) string {
 	s = strings.Replace(s, "&", "&amp;", -1)
 	s = strings.Replace(s, "<", "&lt;", -1)
 	s = strings.Replace(s, ">", "&gt;", -1)
 	return s
 }
 
-var whitespace *regexp.Regexp = regexp.MustCompile(`[\t\n\f\r ]+`)
+var whtspace *regexp.Regexp = regexp.MustCompile(`[\t\n\f\r ]+`)
 
 func collapseText(s string, n *html.Node) string {
-	s = whitespace.ReplaceAllString(s, " ")
+	s = whtspace.ReplaceAllString(s, " ")
 
-	if !inlineTags.has(n.Parent) {
-		if !inlineTags.has(n.PrevSibling) {
+	if !inlnTags.has(n.Parent) {
+		if !inlnTags.has(n.PrevSibling) {
 			s = strings.TrimLeft(s, " ")
 		}
-		if !inlineTags.has(n.NextSibling) {
+		if !inlnTags.has(n.NextSibling) {
 			s = strings.TrimRight(s, " ")
 		}
 	}

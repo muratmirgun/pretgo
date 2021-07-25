@@ -51,8 +51,8 @@ func prettyjson(r io.Reader, w io.Writer) error {
 			break
 		}
 
-		if endOfLine(ch) {
-			return errors.New("unable to recognize this format")
+		if EndOfln(ch) {
+			return errors.New("unable format")
 		}
 	}
 
@@ -73,16 +73,12 @@ func prettyjson(r io.Reader, w io.Writer) error {
 		}
 
 	default:
-		return errors.New("known format error, please file a bug")
+		return errors.New("format error")
 	}
 
 	return nil
 }
 
-func EndOfLine(ch rune) bool {
+func EndOfln(ch rune) bool {
 	return ch == '\n' || ch == '\r'
-}
-
-func Whitespace(ch rune) bool {
-	return ch == ' ' || ch == '\t'
 }

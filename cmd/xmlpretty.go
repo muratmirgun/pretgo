@@ -53,7 +53,7 @@ func prettyxml(r io.Reader, w io.Writer) error {
 		}
 
 		if endOfLine(ch) {
-			return errors.New("unable to recognize this format")
+			return errors.New("unable format")
 		}
 	}
 
@@ -97,7 +97,7 @@ func prettyxml(r io.Reader, w io.Writer) error {
 		return e.Flush()
 
 	default:
-		return errors.New("known format error, please file a bug")
+		return errors.New("known format error")
 	}
 
 	return nil
