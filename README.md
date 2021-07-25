@@ -70,4 +70,4 @@ Created by [@muratmirgun](https://twitter.com/muratmirgun) - feel free to contac
 [issues-shield]: https://img.shields.io/github/issues/muratmirgun/pretgo.svg?style=for-the-badge
 [issues-url]: https://github.com/muratmirgun/pretgo/issues
 [license-shield]: https://img.shields.io/github/license/muratmirgun/pretgo.svg?style=for-the-badge
-[license-url]: https://github.com/muratmirgun/pretgo/blob/master/LICENSE
+[license-url]: https://github.com/muratmirgun/pretgo/blob/main/LICENSE
