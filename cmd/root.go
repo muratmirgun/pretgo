@@ -8,23 +8,19 @@ import (
 )
 
 var message string = `
-Welcome jq for HTML
+Welcome pretgo
 USAGE:
     htmljq [FLAGS] [OPTIONS] <selector>...
 
 FLAGS:
     help                 Prints help information
-    pretty               Pretty-print the serialised output
-    text                 Output only the contents of text nodes inside selected elements
+    phtml                HTML Pretty-print the serialised output attribute <attribute>  Only return this attribute (if present) from selected elements filename <FILE> The input file. Defaults to stdin output <FILE>            The output file. Defaults to stdout
+    pxml                 XML Pretty-print the serialised outputs
+    Jxml                 JSON Pretty-print the serialised outputs
     version              Prints version information
-
-OPTIONS:
-    attribute <attribute>    Only return this attribute (if present) from selected elements
-    filename <FILE>          The input file. Defaults to stdin
-    output <FILE>            The output file. Defaults to stdout
 `
 var rootCmd = &cobra.Command{
-	Use: "htmljq",
+	Use: "pretgo",
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println(message)
 	},

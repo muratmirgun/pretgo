@@ -20,7 +20,6 @@ var prettyCmd = &cobra.Command{
 	Use:   "phtml",
 	Short: "Pretty-print the serialised output",
 	Run: func(cmd *cobra.Command, args []string) {
-
 		indent := "  "
 		wrap, _ := strconv.Atoi(args[0])
 		node, err := html.Parse(os.Stdin)
