@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/muratmirgun/htmljq-go/cmd"
+	"github.com/muratmirgun/pretgo/cmd"
 )
 
 func main() {

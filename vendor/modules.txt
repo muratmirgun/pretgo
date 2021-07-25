@@ -5,7 +5,7 @@ github.com/inconshreveable/mousetrap
 github.com/spf13/cobra
 # github.com/spf13/pflag v1.0.5
 github.com/spf13/pflag
-# golang.org/x/net v0.0.0-20210405180319-a5a99cb37ef4
+# golang.org/x/net v0.0.0-20210716203947-853a461950ff
 ## explicit
 golang.org/x/net/html
 golang.org/x/net/html/atom
