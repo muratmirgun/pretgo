@@ -32,19 +32,19 @@ go install
 ### Basic HTML format usage  
 
 ```bash
-➜ pretgo phtml wrap=80 <old.html >new.html
+➜ cat mes.html | pretgo -format="html"
 ```
 
 ### Basic Json format usage
 
 ```bash
-➜ cat mes.json | pretgo pjson
+➜ cat mes.json | pretgo -format="json"
 ```
 
 ### Basic XML format usage
 
 ```bash
-➜ cat mes.xml | pretgo pxml
+➜ cat mes.xml | pretgo -format="xml"
 ```
 
 ## Status
