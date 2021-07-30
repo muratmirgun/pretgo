@@ -55,7 +55,7 @@ func Pretty(r io.Reader, w io.Writer) error {
 				}
 			}
 
-			e.EncodeToken(t)
+			_ = e.EncodeToken(t)
 		}
 
 		return e.Flush()
