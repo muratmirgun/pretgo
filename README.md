@@ -47,6 +47,31 @@ go install
 ➜ cat mes.xml | pretgo -format="xml"
 ```
 
+## Or use Dockerfile
+
+```bash
+# inside project
+docker build -t pretgo-local .
+```
+
+### Then use it with json
+
+```bash
+➜ cat mes.json | docker run -i --rm pretgo-local -format="json"
+```
+
+### Or html
+
+```bash
+➜ cat mes.html | docker run -i --rm pretgo-local -format="html"
+```
+
+### Or xml format
+
+```bash
+➜ cat mes.xml | docker run -i --rm pretgo-local -format="xml"
+```
+
 ## Status
 
 Project is: _in progress_ .
