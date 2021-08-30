@@ -26,29 +26,6 @@ git clone https://github.com/muratmirgun/pretgo
 ```bash
 go install
 ```
-### Or use Dockerfile to generate image and container
-
-```bash
-# inside project
-docker build -t pretgo-local .
-```
-
-### Then use it with json
-```bash
-➜ cat mes.json | docker run -i --rm pretgo-local -format="json"
-```
-
-### Or html
-
-```bash
-➜ cat mes.html | docker run -i --rm pretgo-local -format="html"
-```
-
-### Or xml format
-
-```bash
-➜ cat mes.xml | docker run -i --rm pretgo-local -format="xml"
-```
 
 ## Code Examples
 
@@ -68,6 +45,31 @@ docker build -t pretgo-local .
 
 ```bash
 ➜ cat mes.xml | pretgo -format="xml"
+```
+
+## Or use Dockerfile
+
+```bash
+# inside project
+docker build -t pretgo-local .
+```
+
+### Then use it with json
+
+```bash
+➜ cat mes.json | docker run -i --rm pretgo-local -format="json"
+```
+
+### Or html
+
+```bash
+➜ cat mes.html | docker run -i --rm pretgo-local -format="html"
+```
+
+### Or xml format
+
+```bash
+➜ cat mes.xml | docker run -i --rm pretgo-local -format="xml"
 ```
 
 ## Status
