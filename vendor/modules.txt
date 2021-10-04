@@ -5,3 +5,6 @@ github.com/yosssi/gohtml
 ## explicit
 golang.org/x/net/html
 golang.org/x/net/html/atom
+# gopkg.in/yaml.v2 v2.4.0
+## explicit
+gopkg.in/yaml.v2
