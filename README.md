@@ -1,6 +1,6 @@
 # PretGO
 
-> So basic cli for format json,html and xml!
+> So basic cli for format json,html, yaml and xml!
 
 ## Table of contents
 
