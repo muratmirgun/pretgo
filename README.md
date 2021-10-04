@@ -47,6 +47,12 @@ go install
 ➜ cat mes.xml | pretgo -format="xml"
 ```
 
+### Basic YAML format usage
+
+```bash
+➜ cat mes.yaml | pretgo -format="yaml"
+```
+
 ## Or use Dockerfile
 
 ```bash
@@ -70,6 +76,12 @@ docker build -t pretgo-local .
 
 ```bash
 ➜ cat mes.xml | docker run -i --rm pretgo-local -format="xml"
+```
+
+### Or yaml format
+
+```bash
+➜ cat mes.yml | docker run -i --rm pretgo-local -format="yml"
 ```
 
 ## Status

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/muratmirgun/pretgo/internal/json"
 	"github.com/muratmirgun/pretgo/internal/xml"
+	"github.com/muratmirgun/pretgo/internal/yaml"
 	"github.com/yosssi/gohtml"
 	"log"
 	"os"
@@ -29,6 +30,12 @@ func main() {
 		scanner := bufio.NewScanner(os.Stdin)
 		for scanner.Scan() {
 			fmt.Println(gohtml.Format(scanner.Text()))
+		}
+	case "yml":
+		fallthrough
+	case "yaml":
+		if err := yaml.Pretty(os.Stdin); err != nil {
+			log.Fatal(err)
 		}
 	}
 }
