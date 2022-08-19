@@ -1,4 +1,6 @@
+// Package cmd
 /*
+
 Copyright © 2022 Murat
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,10 +15,32 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package main
 
-import "pretgo/cmd"
+package cmd
 
-func main() {
-	cmd.Execute()
+import (
+	"log"
+	"os"
+	"pretgo/cmd/subcommand"
+	"pretgo/internal/json"
+
+	"github.com/spf13/cobra"
+)
+
+// jsonCmd represents the json command
+var jsonCmd = &cobra.Command{
+	Use:   "json",
+	Short: "This Command is used to pretty json file cat ",
+	Long:  `Example usage: cat mess.json | pretgo json `,
+	Run: func(cmd *cobra.Command, args []string) {
+
+		if err := json.Pretty(os.Stdin, os.Stdout); err != nil {
+			log.Fatal(err)
+		}
+	},
+}
+
+func init() {
+	jsonCmd.AddCommand(subcommand.FileJson)
+	rootCmd.AddCommand(jsonCmd)
 }

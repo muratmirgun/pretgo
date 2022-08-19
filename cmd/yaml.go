@@ -1,4 +1,6 @@
+// Package cmd
 /*
+
 Copyright © 2022 Murat
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,10 +15,31 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package main
 
-import "pretgo/cmd"
+package cmd
 
-func main() {
-	cmd.Execute()
+import (
+	"log"
+	"os"
+	"pretgo/cmd/subcommand"
+	"pretgo/internal/yaml"
+
+	"github.com/spf13/cobra"
+)
+
+// jsonCmd represents the json command
+var yamlCmd = &cobra.Command{
+	Use:   "yaml",
+	Short: "This Command is used to pretty yaml file cat ",
+	Long:  `Example usage: cat mess.yaml | pretgo yaml `,
+	Run: func(cmd *cobra.Command, args []string) {
+		if err := yaml.Pretty(os.Stdin); err != nil {
+			log.Fatal(err)
+		}
+	},
+}
+
+func init() {
+	yamlCmd.AddCommand(subcommand.FileYaml)
+	rootCmd.AddCommand(yamlCmd)
 }
