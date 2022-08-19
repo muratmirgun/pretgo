@@ -30,13 +30,8 @@ import (
 // xmlCmd represents the json command
 var xmlCmd = &cobra.Command{
 	Use:   "xml",
-	Short: "This Command is used to pretty json cat response",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "This Command is used to pretty xml file cat ",
+	Long:  `Example usage: cat mess.xml | pretgo xml `,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		if err := xml.Pretty(os.Stdin, os.Stdout); err != nil {
