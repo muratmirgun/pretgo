@@ -1,4 +1,4 @@
-FROM golang:1.16.5 as development
+FROM golang:1.21.1-alpine3.12 as development
 WORKDIR /app
 COPY . /app 
 RUN ["go", "install"]
