@@ -1,4 +1,4 @@
-
+<h3 align="center">Redesign in progress</h3>
 <!-- PROJECT SHIELDS -->
 [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
