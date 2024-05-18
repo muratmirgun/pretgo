@@ -3,8 +3,9 @@ package yaml
 import (
 	"bytes"
 	"fmt"
-	"gopkg.in/yaml.v2"
 	"io"
+
+	"gopkg.in/yaml.v2"
 )
 
 func Pretty(r io.Reader) error {

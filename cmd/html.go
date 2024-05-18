@@ -21,10 +21,11 @@ package cmd
 import (
 	"bufio"
 	"fmt"
-	"github.com/spf13/cobra"
-	"github.com/yosssi/gohtml"
 	"os"
 	"pretgo/cmd/subcommand"
+
+	"github.com/spf13/cobra"
+	"github.com/yosssi/gohtml"
 )
 
 // jsonCmd represents the json command

@@ -1,10 +1,11 @@
 package subcommand
 
 import (
-	"github.com/spf13/cobra"
 	"log"
 	"os"
 	"pretgo/internal/json"
+
+	"github.com/spf13/cobra"
 )
 
 var FileJson = &cobra.Command{

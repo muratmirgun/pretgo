@@ -1,10 +1,11 @@
 package subcommand
 
 import (
-	"github.com/spf13/cobra"
 	"log"
 	"os"
 	"pretgo/internal/yaml"
+
+	"github.com/spf13/cobra"
 )
 
 var FileYaml = &cobra.Command{

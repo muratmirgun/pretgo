@@ -3,10 +3,11 @@ package subcommand
 import (
 	"bufio"
 	"fmt"
-	"github.com/spf13/cobra"
-	"github.com/yosssi/gohtml"
 	"log"
 	"os"
+
+	"github.com/spf13/cobra"
+	"github.com/yosssi/gohtml"
 )
 
 var FileHtml = &cobra.Command{
